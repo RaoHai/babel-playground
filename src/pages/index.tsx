@@ -23,7 +23,7 @@ export default function() {
     (prev, curr) => ({ ...prev, [curr.name]: curr.globalName }), {}
     ), [umdResources]);
 
-  const [presets, setPresets] = useState(['react']);
+  const [presets, setPresets] = useState(['tsx', 'react']);
   const [plugins, setPlugins] = useState([
     [
       'transform-modules-umd',
@@ -38,10 +38,13 @@ import lodash from 'lodash';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
+export type a = { foo: 'bar'; };
+
 function App() {
+  const key:string = 'a';
   useEffect(() => {
-    console.log(lodash.pick({ a: '1', b: '2' }, 'a'));
-  }, []);
+    console.log(lodash.pick({ a: '1', b: '2' }, key));
+  }, [key]);
   return <div> hello world </div>
 }
 
@@ -76,8 +79,13 @@ ReactDOM.render(<App />, document.querySelector('#container'));
   }, []);
 
   const run = useCallback(() => {
+    standalone.registerPreset('tsx', {
+      presets: [
+        [standalone.availablePresets['typescript'], {allExtensions: true, isTSX: true}]
+      ],
+    });
     const transformed = standalone.transform(code, {
-      filename: 'demo.ts',
+      filename: 'demo.tsx',
       plugins,
       presets,
     });
